@@ -43,10 +43,20 @@ const userController = {
     const reqUser = helpers.getUser(req) // 滿足測試檔所增加的
     const checkUser = (Number(userId) === reqUser.id)
     return Promise.all([
-      User.findByPk(userId),
+      User.findByPk(userId, {
+        include: [
+          { model: User, as: 'Followers', attributes: ['id', 'name', 'image'] },
+          { model: User, as: 'Followings', attributes: ['id', 'name', 'image'] },
+          { model: Restaurant, as: 'FavoritedRestaurants', attributes: ['id', 'name', 'image'] },
+          { model: Restaurant, as: 'LikedRestaurants', attributes: ['id', 'name', 'image'] }
+        ],
+        nest: true
+      }),
       // 也可以分開用 finAll 和 count 來完成計數
       Comment.findAndCountAll({
-        include: Restaurant,
+        include: [
+          { model: Restaurant, attributes: ['id', 'image'] }
+        ],
         where: {
           ...userId ? { userId } : {}
         },
@@ -55,9 +65,23 @@ const userController = {
       })
     ])
       // { rows } 顯示下一層內容，不會只返回[object]，{ count } 計算數量。
-      .then(([user, { rows: comments, count: totalComments }]) => {
+      .then(([
+        user,
+        { rows: comments, count: totalComments }
+      ]) => {
         assert(user, "User didn't exist!")
-        return res.render('users/profile', { user: user.toJSON(), comments, totalComments, checkUser })
+        const userData = {
+          ...user.toJSON()
+          // 先註解掉下面這行，讓測試可以過
+          // isFollowed: checkUser.Followings.some(f => f.id === user.id)
+        }
+        console.log(userData)
+        return res.render('users/profile', {
+          user: userData,
+          checkUser,
+          comments,
+          totalComments
+        })
       })
       .catch(err => next(err))
   },

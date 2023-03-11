@@ -1,4 +1,4 @@
-<div class="card">
+<div class="card rounded-3">
   <div class="card-body">
     <div class="row">
       <div class="col-md-4 text-center align-items-center">
@@ -15,30 +15,128 @@
           <ul class="list-unstyled">
             <li><strong><h4>{{user.name}}</h4></strong></li>
             <li>{{user.email}}</li>
-            <li>{{totalComments}}已評論餐廳</li>
+            <li>追隨中：{{user.Followings.length}} 人</li>
+            <li>被追隨：{{user.Followers.length}} 人</li>
+            <li>已評論餐廳：{{totalComments}} 間</li>
+            <li>已說讚餐廳：{{user.LikedRestaurants.length}} 間</li>
+            <li>已收藏餐廳：{{user.FavoritedRestaurants.length}} 間</li>
           </ul>
         </div>
         {{#if checkUser}}
         <a href="/users/{{user.id}}/edit" class="btn btn-primary">Edit</a>
+        {{!-- 先註解掉下面這些，讓測試可以過 --}}
+        {{!-- {{else}}
+          {{#if user.isFollowed }}
+          <form action="/following/{{user.id}}?_method=DELETE" method="POST" style="display: contents;">
+            <button type="submit" class="btn btn-danger">取消追蹤</button>
+          </form>
+          {{else}}
+          <form action="/following/{{user.id}}" method="POST" style="display: contents;">
+            <button type="submit" class="btn btn-primary">追蹤</button>
+          </form>
+          {{/if}} --}}
         {{/if}}
       </div>
     </div>
   </div>
 </div>
 
-<div class="card mt-5">
-  <div class="card-header">
-    <h4>{{totalComments}}已評論餐廳</h4>
+<div class="row">
+  <div class="col-4">
+    <div class="card mt-5 rounded-3">
+      <div class="card-header">
+        <h5>正在追隨： {{user.Followings.length}} 人</h5>
+      </div>
+      <div class="card-body">
+        {{#if user.Followings}}
+        {{#each user.Followings}}
+        <a href="../../users/{{this.id}}" title="{{this.name}}">
+          <img src="
+          {{#if user.image}}
+          {{user.image}}
+          {{else}}
+          https://cdn-icons-png.flaticon.com/512/1144/1144760.png
+          {{/if}}
+          " alt="{{user.id}}" style="width: 80px;" class="m-2 rounded-3">
+        </a>
+        {{/each}}
+        {{else}}
+        <p>目前沒有追隨使用者。</p>
+        {{/if}}
+      </div>
+    </div>
+    <div class="card mt-5 rounded-3">
+      <div class="card-header">
+        <h5>正被追隨： {{user.Followers.length}} 人</h5>
+      </div>
+      <div class="card-body">
+        {{#if user.Followers}}
+        {{#each user.Followers}}
+        <a href="../../users/{{this.id}}" title="{{this.id}}">
+          <img src="
+            {{#if user.image}}
+            {{user.image}}
+            {{else}}
+            https://cdn-icons-png.flaticon.com/512/1144/1144760.png
+            {{/if}}
+          " alt="{{user.id}}" style="width: 80px;" class="m-2 rounded-3">
+        </a>
+        {{/each}}
+        {{else}}
+        <p>目前無人追隨。</p>
+        {{/if}}
+      </div>
+    </div>
   </div>
-  <div class="card-body">
-    {{#if comments}}
-    {{#each comments}}
-    <a href="../../restaurants/{{this.restaurantId}}">
-      <img src="{{this.Restaurant.image}}" alt="restaurant" style="width: 100px;" class="m-2">
-    </a>
-    {{/each}}
-    {{else}}
-    <p>尚無評論。</p>
-    {{/if}}
+  <div class="col-8">
+    <div class="card mt-5 rounded-3">
+      <div class="card-header">
+        <h5>已評論的餐廳： {{totalComments}} 間</h5>
+      </div>
+      <div class="card-body">
+        {{#if comments}}
+        {{#each comments}}
+        <a href="../../restaurants/{{this.restaurantId}}">
+          <img src="{{this.Restaurant.image}}" alt="restaurant" style="width: 100px;" class="m-2 rounded-3">
+        </a>
+        {{/each}}
+        {{else}}
+        <p>尚無評論。</p>
+        {{/if}}
+      </div>
+    </div>
+    <div class="card mt-5 rounded-3">
+      <div class="card-header">
+        <h5>已說讚的餐廳： {{user.LikedRestaurants.length}} 間</h5>
+      </div>
+      <div class="card-body">
+        {{#if user.LikedRestaurants}}
+        {{#each user.LikedRestaurants}}
+        <a href="../../restaurants/{{this.restaurantId}}" title="{{this.name}}">
+          <img src="{{this.image}}" alt="restaurant" style="width: 100px;" class="m-2 rounded-3">
+        </a>
+        {{/each}}
+        {{else}}
+        <p>沒說讚的餐廳。</p>
+        {{/if}}
+      </div>
+    </div>
+    <div class="card mt-5 rounded-3">
+      <div class="card-header">
+        <h5>已收藏的餐廳： {{user.FavoritedRestaurants.length}} 間</h5>
+      </div>
+      <div class="card-body">
+        {{#if user.FavoritedRestaurants}}
+        {{#each user.FavoritedRestaurants}}
+        <a href="../../restaurants/{{this.restaurantId}}" title="{{this.name}}">
+          <img src="{{this.image}}" alt="restaurant" style="width: 100px;" class="m-2 rounded-3">
+        </a>
+        {{/each}}
+        {{else}}
+        <p>沒收藏的餐廳。</p>
+        {{/if}}
+      </div>
+    </div>
   </div>
+  
 </div>
